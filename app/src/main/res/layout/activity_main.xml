@@ -230,7 +230,7 @@
             android:layout_width="110dp"
             android:layout_height="50dp"
             android:backgroundTint="#DAED0909"
-            android:onClick="reset"
+            android:onClick="resetScore"
             android:text="Reset"
             android:textSize="18dp"
             android:layout_marginRight="10dp"

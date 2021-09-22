@@ -3,8 +3,11 @@ package com.example.android.tictactoe;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,26 +25,28 @@ public class MainActivity extends AppCompatActivity {
     public static final String NAME_B = "nameB";
 
 
-    int x=0; int zero=0;
+    int x = 0;
+    int zero = 0;
     String winnerStrX = new String();
     String winnerStr0 = new String();
     boolean gameActive = true;
 
     int activePlayer = 0;
-    int[] gameState = {2,2,2,2,2,2,2,2,2};
+    int[] gameState = {2, 2, 2, 2, 2, 2, 2, 2, 2};
     // 0 = x
     //1 = 0
     //2 = Null
 
-    int[][] winPositions = {  {0,1,2}, {3,4,5}, {6,7,8},
-                              {0,3,6}, {1,4,7}, {2,5,8},
-                              {0,4,8}, {2,4,6}  };
+    int[][] winPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+            {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+            {0, 4, 8}, {2, 4, 6}};
 
 
     int counter = 0;
+
     public void playerTap(View view) {
         counter++;
-        MediaPlayer touch = MediaPlayer.create(this,R.raw.x);
+        MediaPlayer touch = MediaPlayer.create(this, R.raw.x);
         touch.start();
 
         TextView turnBox = findViewById(R.id.turn);
@@ -60,12 +65,11 @@ public class MainActivity extends AppCompatActivity {
             // after every tap
 
 
-
             gameState[tappedImage] = activePlayer;
 
 
             if (activePlayer == 0) {
-                MediaPlayer touchx = MediaPlayer.create(this,R.raw.x);
+                MediaPlayer touchx = MediaPlayer.create(this, R.raw.x);
                 touchx.start();
                 turnBox.setText(nameB + "'s  Turn ");
                 img.setImageResource(R.drawable.cross);
@@ -73,13 +77,20 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else {
-                MediaPlayer touch0 = MediaPlayer.create(this,R.raw.zero);
+                MediaPlayer touch0 = MediaPlayer.create(this, R.raw.zero);
                 touch0.start();
                 turnBox.setText(nameA + "'s  Turn ");
                 img.setImageResource(R.drawable.zero);
                 activePlayer = 0;
 
             }
+        }
+
+        if (counter == 9) {
+            MediaPlayer draw = MediaPlayer.create(this, R.raw.draw);
+            draw.start();
+            onDraw();
+            counter = 0;
         }
 
 
@@ -99,34 +110,58 @@ public class MainActivity extends AppCompatActivity {
                     win.start();
                     winnerStrX = Integer.toString(++x);
                     winnerStr0 = Integer.toString(zero);
-                    boardReset();
+                    winnerAlert(nameA);
                 }
                 else if (gameState[winPosition[0]] == 1) {
                     MediaPlayer win = MediaPlayer.create(this, R.raw.win);
                     win.start();
                     winnerStr0 = Integer.toString(++zero);
                     winnerStrX = Integer.toString(x);
-                    boardReset();
+                    winnerAlert(nameB);
                 }
 
                 // Update the status bar for winner announcement
                 TextView scoreX = findViewById(R.id.player1_score);
                 TextView score0 = findViewById(R.id.player2_score);
+
                 scoreX.setText(winnerStrX);
                 score0.setText(winnerStr0);
-            }
-
-            else if(counter==9){
-                MediaPlayer draw = MediaPlayer.create(this,R.raw.draw);
-                draw.start();
-                onDraw();
-                counter = 0;
             }
 
         }
 
 
+    }
 
+    void winnerAlert(String name) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle(name + " has won !!");
+
+        builder.setMessage("Play again ?");
+
+        builder.setCancelable(false);
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog,
+                                int which) {
+                boardReset();
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog,
+                                int which) {
+                Button result = findViewById(R.id.result);
+                showResult(result);
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public void boardReset(){
@@ -144,15 +179,13 @@ public class MainActivity extends AppCompatActivity {
         ((ImageView)findViewById(R.id.imageView8)).setImageResource(0);
     }
 
-    public void reset(View view) {
+    public void resetScore(View view) {
         MediaPlayer click = MediaPlayer.create(this,R.raw.click);
         click.start();
-        x=0;
-        zero=0;
         TextView scoreX1 = findViewById(R.id.player1_score);
         TextView score01 = findViewById(R.id.player2_score);
-        scoreX1.setText(x);
-        score01.setText(zero);
+        scoreX1.setText("0");
+        score01.setText("0");
 
     }
 
@@ -195,14 +228,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("ResourceAsColor")
     public void onDraw()
     {
 
         // Create the object of
         // AlertDialog Builder class
-        AlertDialog.Builder builder
-                = new AlertDialog
-                .Builder(MainActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
         // Set the message show for the Alert time
         builder.setMessage("Play again ?");
@@ -219,37 +251,27 @@ public class MainActivity extends AppCompatActivity {
         // OnClickListener method is use of
         // DialogInterface interface.
 
-        builder
-                .setPositiveButton(
-                        "Yes",
-                        new DialogInterface
-                                .OnClickListener() {
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                boardReset();
+            }
 
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which){
-                                boardReset();
-                            }
-
-                        });
+        });
 
         // Set the Negative button with No name
         // OnClickListener method is use
         // of DialogInterface interface.
         builder
-                .setNegativeButton(
-                        "No",
-                        new DialogInterface
-                                .OnClickListener() {
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
 
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which)
-                            {
-                                Button result = findViewById(R.id.result);
-                                showResult(result);
-                            }
-                        });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Button result = findViewById(R.id.result);
+                        showResult(result);
+                    }
+                });
 
         // Create the Alert dialog
         AlertDialog alertDialog = builder.create();
@@ -260,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    
+
 
 
     @Override

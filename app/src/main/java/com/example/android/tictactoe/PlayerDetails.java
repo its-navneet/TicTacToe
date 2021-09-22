@@ -51,11 +51,6 @@ public class PlayerDetails extends AppCompatActivity {
 
         };thread.start();
 
-
-
-
-
-
     }
 
 
